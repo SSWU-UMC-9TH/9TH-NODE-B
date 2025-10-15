@@ -8,7 +8,6 @@ export const getStoreById = async (storeId) => {
 export const addMission = async (data) => {
     const conn = await pool.getConnection();
     try {
-        console.log("[DEBUG] inserting mission data:", data); // 👈 추가
         const [result] = await conn.query(
             `INSERT INTO mission (store_id, reward, deadline, mission_spec, created_at, updated_at)
              VALUES (?, ?, ?, ?, NOW(), NOW());`,
@@ -16,7 +15,6 @@ export const addMission = async (data) => {
         );
         return result.insertId;
     } catch (err) {
-        console.error("[ERROR] addMission SQL failed:", err); // 👈 추가
         throw new Error(`미션 등록 중 오류 발생: ${err.message}`);
     } finally {
         conn.release();

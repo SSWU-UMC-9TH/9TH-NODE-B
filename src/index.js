@@ -5,6 +5,7 @@ import { handleUserSignUp } from "./controllers/user.controller.js";
 import { handleCreateStore } from "./controllers/store.controller.js";
 import { handleCreateReview } from "./controllers/review.controller.js";
 import { handleCreateMission } from "./controllers/mission.controller.js";
+import { handleUserMissionChallenge } from "./controllers/userMission.controller.js";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.post("/api/v1/users/signup", handleUserSignUp);     // 회원가입
 app.post("/api/v1/stores", handleCreateStore);          // 가게 등록
 app.post("/api/v1/stores/:storeId/reviews", handleCreateReview);        // 리뷰 등록
 app.post("/api/v1/stores/:storeId/missions", handleCreateMission);      // 미션 등록
+app.post("/api/v1/stores/:storeId/missions/:missionId/challenge", handleUserMissionChallenge);      // 가게 도전 중인 미션에 추가
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
