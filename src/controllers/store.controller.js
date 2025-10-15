@@ -17,7 +17,6 @@ export const handleCreateStore = async (req, res, next) => {
 
         res.status(StatusCodes.CREATED).json({ result: response });
     } catch (error) {
-        console.error("가게 등록 오류:", error.message);
-        res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+        next(error);
     }
 };

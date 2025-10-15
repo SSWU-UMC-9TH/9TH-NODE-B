@@ -1,6 +1,8 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import { StatusCodes } from "http-status-codes";
+
 import { handleUserSignUp } from "./controllers/user.controller.js";
 import { handleCreateStore } from "./controllers/store.controller.js";
 import { handleCreateReview } from "./controllers/review.controller.js";
@@ -26,6 +28,33 @@ app.post("/api/v1/stores", handleCreateStore);          // 가게 등록
 app.post("/api/v1/stores/:storeId/reviews", handleCreateReview);        // 리뷰 등록
 app.post("/api/v1/stores/:storeId/missions", handleCreateMission);      // 미션 등록
 app.post("/api/v1/stores/:storeId/missions/:missionId/challenge", handleUserMissionChallenge);      // 가게 도전 중인 미션에 추가
+
+// 404 Not Found 핸들러(항상 에러 핸들러보다 위에!)
+app.use((req, res, next) => {
+    res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        error: {
+            message: "요청하신 API를 찾을 수 없습니다.",
+            statusCode: StatusCodes.NOT_FOUND,
+        },
+    });
+});
+
+// 전역 에러 핸들러
+app.use((err, req, res, next) => {
+    console.error("[Error Handler]", err);
+
+    const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+    const message = err.message || "서버 내부 오류가 발생했습니다.";
+
+    res.status(statusCode).json({
+        success: false,
+        error: {
+            message,
+            statusCode,
+        },
+    });
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);

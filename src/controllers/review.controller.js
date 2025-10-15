@@ -18,7 +18,6 @@ export const handleCreateReview = async (req, res, next) => {
 
         res.status(StatusCodes.CREATED).json({ result: response });
     } catch (error) {
-        console.error("리뷰 등록 오류:", error.message);
-        res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+        next(error);
     }
 };

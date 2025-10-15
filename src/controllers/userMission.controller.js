@@ -13,7 +13,6 @@ export const handleUserMissionChallenge = async (req, res, next) => {
         const response = responseFromUserMission({ userMission });
         res.status(StatusCodes.CREATED).json({ result: response });
     } catch (error) {
-        console.error("미션 도전 등록 오류:", error.message);
-        res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+        next(error);
     }
 };
