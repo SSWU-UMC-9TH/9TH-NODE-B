@@ -2,7 +2,8 @@ export const bodyToUser = (body) => {
     const birth = new Date(body.birth); //날짜 변환
 
     return {
-        email: body.email, //필수 
+        email: body.email, //필수
+        password: body.password, // 필수
         name: body.name, // 필수
         gender: body.gender, // 필수
         birth, // 필수
