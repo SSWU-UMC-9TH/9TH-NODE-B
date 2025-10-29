@@ -2,27 +2,30 @@ import { prisma } from "../db.config.js";
 
 // 지역 존재 여부 확인
 export const getRegionById = async (regionId) => {
-    const [rows] = await pool.query(`SELECT * FROM region WHERE id = ?;`, [regionId]);
-    return rows.length > 0 ? rows[0] : null;
+    const region = await prisma.region.findUnique({
+        where: { id: regionId },
+    });
+    return region;
 };
 
 // 가게 추가
 export const addStore = async (data) => {
-    const conn = await pool.getConnection();
     try {
-        const [result] = await conn.query(
-            `INSERT INTO store (region_id, name, address, score, created_at, updated_at)
-       VALUES (?, ?, ?, ?, NOW(), NOW());`,
-            [data.regionId, data.name, data.address, data.score]
-        );
-        return result.insertId;
+        const store = await prisma.store.create({
+            data: {
+                regionId: data.regionId,
+                name: data.name,
+                address: data.address,
+                score: data.score,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        });
+        return store.id;
     } catch (err) {
         throw new Error(`가게 등록 중 오류 발생: ${err.message}`);
-    } finally {
-        conn.release();
     }
 };
-
 // 리뷰 목록 조회
 export const getAllStoreReviews = async (storeId, cursor) => {
     const reviews = await prisma.userStoreReview.findMany({
