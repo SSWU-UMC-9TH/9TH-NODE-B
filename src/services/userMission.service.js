@@ -1,4 +1,4 @@
-import { getMissionById, addUserMission, findUserMission } from "../repositories/userMission.repository.js";
+import { getMissionById, addUserMission, findUserMission, getUserActiveMissions } from "../repositories/userMission.repository.js";
 
 export const createUserMission = async (storeId, missionId, data) => {
     const { userId } = data;
@@ -30,4 +30,14 @@ export const createUserMission = async (storeId, missionId, data) => {
         created_at: new Date(),
         updated_at: new Date()
     };
+};
+
+// 내가 진행 중인 미션 목록
+export const listUserActiveMissions = async (userId) => {
+    try {
+        const missions = await getUserActiveMissions(userId);
+        return missions;
+    } catch (err) {
+        throw new Error(`진행 중 미션 목록 로딩 중 오류 발생: ${err.message}`);
+    }
 };

@@ -7,7 +7,7 @@ import { handleUserSignUp } from "./controllers/user.controller.js";
 import { handleCreateStore, handleListStoreReviews } from "./controllers/store.controller.js";
 import { handleCreateReview, handleListUserReviews } from "./controllers/review.controller.js";
 import { handleCreateMission, handleListStoreMissions } from "./controllers/mission.controller.js";
-import { handleUserMissionChallenge } from "./controllers/userMission.controller.js";
+import { handleUserMissionChallenge, handleListUserActiveMissions } from "./controllers/userMission.controller.js";
 
 dotenv.config();
 
@@ -32,6 +32,7 @@ app.post("/api/v1/stores/:storeId/missions/:missionId/challenge", handleUserMiss
 app.get("/api/v1/stores/:storeId/reviews", handleListStoreReviews);     // 리뷰 조회
 app.get("/api/v1/users/:userId/reviews", handleListUserReviews);        // 내가 작성한 리뷰 목록
 app.get("/api/v1/stores/:storeId/missions", handleListStoreMissions);   // 특정 가게의 미션 목록
+app.get("/api/v1/users/:userId/missions/active", handleListUserActiveMissions);     // 내가 진행 중인 미션 목록
 
 // 404 Not Found 핸들러
 app.use((req, res, next) => {
