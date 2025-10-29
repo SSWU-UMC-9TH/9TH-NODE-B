@@ -4,7 +4,7 @@ import express from "express";
 import { StatusCodes } from "http-status-codes";
 
 import { handleUserSignUp } from "./controllers/user.controller.js";
-import { handleCreateStore } from "./controllers/store.controller.js";
+import { handleCreateStore, handleListStoreReviews } from "./controllers/store.controller.js";
 import { handleCreateReview } from "./controllers/review.controller.js";
 import { handleCreateMission } from "./controllers/mission.controller.js";
 import { handleUserMissionChallenge } from "./controllers/userMission.controller.js";
@@ -28,6 +28,8 @@ app.post("/api/v1/stores", handleCreateStore);          // 가게 등록
 app.post("/api/v1/stores/:storeId/reviews", handleCreateReview);        // 리뷰 등록
 app.post("/api/v1/stores/:storeId/missions", handleCreateMission);      // 미션 등록
 app.post("/api/v1/stores/:storeId/missions/:missionId/challenge", handleUserMissionChallenge);      // 가게 도전 중인 미션에 추가
+
+app.get("/api/v1/stores/:storeId/reviews", handleListStoreReviews);     // 리뷰 조회
 
 // 404 Not Found 핸들러(항상 에러 핸들러보다 위에!)
 app.use((req, res, next) => {

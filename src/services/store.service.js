@@ -1,4 +1,5 @@
-import { addStore, getRegionById } from "../repositories/store.repository.js";
+import { addStore, getRegionById, getAllStoreReviews } from "../repositories/store.repository.js";
+import { responseFromReviews } from "../dtos/store.dto.js";
 
 export const createStore = async (data) => {
     const { regionId, name, address, score } = data;
@@ -12,4 +13,10 @@ export const createStore = async (data) => {
     // 가게 등록
     const storeId = await addStore({ regionId, name, address, score });
     return { id: storeId, regionId, name, address, score };
+};
+
+// 리뷰 목록 조회
+export const listStoreReviews = async (storeId) => {
+    const reviews = await getAllStoreReviews(storeId);
+    return responseFromReviews(reviews);
 };

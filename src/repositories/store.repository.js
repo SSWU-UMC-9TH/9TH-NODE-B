@@ -1,4 +1,4 @@
-import { pool } from "../db.config.js";
+import { prisma } from "../db.config.js";
 
 // 지역 존재 여부 확인
 export const getRegionById = async (regionId) => {
@@ -21,4 +21,16 @@ export const addStore = async (data) => {
     } finally {
         conn.release();
     }
+};
+
+// 리뷰 목록 조회
+export const getAllStoreReviews = async (storeId, cursor) => {
+    const reviews = await prisma.userStoreReview.findMany({
+        select: { id: true, content: true, store: true, user: true },
+        where: { storeId: storeId, id: { gt: cursor } },
+        orderBy: { id: "asc" },
+        take: 5,
+    });
+
+    return reviews;
 };
