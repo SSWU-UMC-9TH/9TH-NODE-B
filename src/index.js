@@ -6,7 +6,7 @@ import { StatusCodes } from "http-status-codes";
 import { handleUserSignUp } from "./controllers/user.controller.js";
 import { handleCreateStore, handleListStoreReviews } from "./controllers/store.controller.js";
 import { handleCreateReview, handleListUserReviews } from "./controllers/review.controller.js";
-import { handleCreateMission } from "./controllers/mission.controller.js";
+import { handleCreateMission, handleListStoreMissions } from "./controllers/mission.controller.js";
 import { handleUserMissionChallenge } from "./controllers/userMission.controller.js";
 
 dotenv.config();
@@ -31,8 +31,9 @@ app.post("/api/v1/stores/:storeId/missions/:missionId/challenge", handleUserMiss
 
 app.get("/api/v1/stores/:storeId/reviews", handleListStoreReviews);     // 리뷰 조회
 app.get("/api/v1/users/:userId/reviews", handleListUserReviews);        // 내가 작성한 리뷰 목록
+app.get("/api/v1/stores/:storeId/missions", handleListStoreMissions);   // 특정 가게의 미션 목록
 
-// 404 Not Found 핸들러(항상 에러 핸들러보다 위에!)
+// 404 Not Found 핸들러
 app.use((req, res, next) => {
     res.status(StatusCodes.NOT_FOUND).json({
         success: false,

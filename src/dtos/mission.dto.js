@@ -21,3 +21,26 @@ export const responseFromMission = ({ mission }) => {
         updatedAt: m.updated_at
     };
 };
+
+// [요청] 특정 가게의 미션 목록
+export class ListStoreMissionsRequestDto {
+    constructor(params) {
+        this.storeId = Number(params.storeId);
+    }
+}
+
+// [응답] 특정 가게의 미션 목록
+export class MissionListResponseDto {
+    constructor(missions) {
+        this.missions = missions.map((m) => ({
+            missionId: m.id,
+            reward: m.reward,
+            deadline: m.deadline,
+            missionSpec: m.missionSpec,
+            store: {
+                id: m.store.id,
+                name: m.store.name,
+            },
+        }));
+    }
+}

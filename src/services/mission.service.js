@@ -1,4 +1,4 @@
-import { getStoreById, addMission } from "../repositories/mission.repository.js";
+import { getStoreById, addMission, getMissionsByStoreId } from "../repositories/mission.repository.js";
 
 export const createMission = async (storeId, data) => {
     // 가게 존재 여부 확인
@@ -25,4 +25,14 @@ export const createMission = async (storeId, data) => {
         created_at: new Date(),
         updated_at: new Date()
     };
+};
+
+// 특정 가게의 미션 목록 조회
+export const listStoreMissions = async (storeId) => {
+    try {
+        const missions = await getMissionsByStoreId(storeId);
+        return missions;
+    } catch (err) {
+        throw new Error(`미션 목록 로딩 중 오류 발생: ${err.message}`);
+    }
 };

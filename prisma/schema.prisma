@@ -56,6 +56,7 @@ model Store {
   name String @db.VarChar(100)
 
   userStoreReviews UserStoreReview[]
+  Mission          Mission[]
 
   @@map("store")
 }
@@ -70,4 +71,18 @@ model UserStoreReview {
   user  User  @relation(fields: [userId], references: [id])
 
   @@map("user_store_review")
+}
+
+model Mission {
+  id          Int      @id @default(autoincrement())
+  storeId     Int      @map("store_id")
+  reward      String   @db.VarChar(255)
+  deadline    DateTime
+  missionSpec String   @map("mission_spec") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
+
+  store Store @relation(fields: [storeId], references: [id])
+
+  @@map("mission")
 }
