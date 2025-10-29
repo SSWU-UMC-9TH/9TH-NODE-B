@@ -42,3 +42,24 @@ export const addReviewImage = async (data) => {
         throw new Error(`리뷰 이미지 등록 중 오류 발생: ${err.message}`);
     }
 };
+
+// 내가 작성한 리뷰 목록 조회
+export const getUserReviews = async (userId, cursor) => {
+    const take = 5;
+    const where = {
+        userId: Number(userId),
+        ...(cursor ? { id: { gt: Number(cursor) } } : {}),
+    };
+
+    const reviews = await prisma.userStoreReview.findMany({
+        where,
+        include: {
+            store: { select: { id: true, name: true } },
+        },
+        orderBy: { id: "asc" },
+        take,
+    });
+
+    const nextCursor = reviews.length > 0 ? reviews[reviews.length - 1].id : null;
+    return { reviews, nextCursor };
+};

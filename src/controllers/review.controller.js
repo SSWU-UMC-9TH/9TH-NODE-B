@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
-import { bodyToReview, responseFromReview } from "../dtos/review.dto.js";
-import { createReview } from "../services/review.service.js";
+import { bodyToReview, responseFromReview, ListUserReviewsRequestDto, UserReviewListResponseDto } from "../dtos/review.dto.js";
+import { createReview, listUserReviews } from "../services/review.service.js";
 
 export const handleCreateReview = async (req, res, next) => {
     try {
@@ -19,5 +19,21 @@ export const handleCreateReview = async (req, res, next) => {
         res.status(StatusCodes.CREATED).json({ result: response });
     } catch (error) {
         next(error);
+    }
+};
+
+// 내가 작성한 리뷰 목록 조회
+export const handleListUserReviews = async (req, res, next) => {
+    try {
+        const requestDto = new ListUserReviewsRequestDto(req.params, req.query);
+        const { reviews, nextCursor } = await listUserReviews(requestDto.userId, requestDto.cursor);
+        const responseDto = new UserReviewListResponseDto(reviews, nextCursor);
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            data: responseDto,
+        });
+    } catch (err) {
+        next(err);
     }
 };
