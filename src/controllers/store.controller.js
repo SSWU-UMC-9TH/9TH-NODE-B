@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { bodyToStore, responseFromStore } from "../dtos/store.dto.js";
-import { createStore } from "../services/store.service.js";
+import { createStore, listStoreReviews } from "../services/store.service.js";
 
 export const handleCreateStore = async (req, res, next) => {
     try {
@@ -19,4 +19,16 @@ export const handleCreateStore = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+};
+
+// 리뷰 목록 조회
+export const handleListStoreReviews = async (req, res, next) => {
+    const reviews = await listStoreReviews(
+        parseInt(req.params.storeId),
+        typeof req.query.cursor === "string" ? parseInt(req.query.cursor) : 0
+    );
+    res.status(StatusCodes.OK).json({
+        success: true,
+        result: reviews,
+    });
 };

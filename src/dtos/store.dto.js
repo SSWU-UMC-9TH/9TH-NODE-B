@@ -22,3 +22,13 @@ export const responseFromStore = ({ store }) => {
         updatedAt: s.updated_at
     };
 };
+
+// 리뷰 목록 조회
+export const responseFromReviews = (reviews) => {
+    return {
+        data: reviews,
+        pagination: {
+            cursor: reviews.length ? reviews[reviews.length - 1].id : null,
+        },
+    };
+};

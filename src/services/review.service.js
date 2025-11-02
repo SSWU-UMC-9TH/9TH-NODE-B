@@ -1,4 +1,4 @@
-import { addReview, addReviewImage, getStoreById } from "../repositories/review.repository.js";
+import { addReview, addReviewImage, getStoreById, getUserReviews } from "../repositories/review.repository.js";
 
 export const createReview = async (storeId, data) => {
     const { userId, body, score, images } = data;
@@ -33,4 +33,14 @@ export const createReview = async (storeId, data) => {
             created_at: new Date()
         })) || []
     };
+};
+
+// 내가 작성한 리뷰 목록 조회
+export const listUserReviews = async (userId, cursor) => {
+    try {
+        const { reviews, nextCursor } = await getUserReviews(userId, cursor);
+        return { reviews, nextCursor };
+    } catch (err) {
+        throw new Error(`내 리뷰 목록 조회 중 오류 발생: ${err.message}`);
+    }
 };

@@ -1,22 +1,43 @@
-import { pool } from "../db.config.js";
+import { prisma } from "../db.config.js";
 
+// 특정 가게 조회
 export const getStoreById = async (storeId) => {
-    const [rows] = await pool.query("SELECT * FROM store WHERE id = ?;", [storeId]);
-    return rows.length > 0 ? rows[0] : null;
+    return await prisma.store.findUnique({
+        where: { id: storeId },
+    });
 };
 
+// 미션 추가
 export const addMission = async (data) => {
-    const conn = await pool.getConnection();
     try {
-        const [result] = await conn.query(
-            `INSERT INTO mission (store_id, reward, deadline, mission_spec, created_at, updated_at)
-             VALUES (?, ?, ?, ?, NOW(), NOW());`,
-            [data.storeId, data.reward, data.deadline, data.missionSpec]
-        );
-        return result.insertId;
+        const mission = await prisma.mission.create({
+            data: {
+                storeId: data.storeId,
+                reward: data.reward,
+                deadline: data.deadline,
+                missionSpec: data.missionSpec,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        });
+        return mission.id;
     } catch (err) {
         throw new Error(`미션 등록 중 오류 발생: ${err.message}`);
-    } finally {
-        conn.release();
+    }
+};
+
+// 특정 가게의 미션 목록 조회
+export const getMissionsByStoreId = async (storeId) => {
+    try {
+        const missions = await prisma.mission.findMany({
+            where: { storeId: Number(storeId) },
+            orderBy: { id: "asc" },
+            include: {
+                store: { select: { id: true, name: true } },
+            },
+        });
+        return missions;
+    } catch (err) {
+        throw new Error(`미션 목록 조회 중 오류 발생: ${err.message}`);
     }
 };

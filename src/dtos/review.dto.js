@@ -26,3 +26,26 @@ export const responseFromReview = ({ review, images = [] }) => {
         createdAt: r.created_at
     };
 };
+
+// [요청] 내가 작성한 리뷰 목록 조회
+export class ListUserReviewsRequestDto {
+    constructor(params, query) {
+        this.userId = Number(params.userId);
+        this.cursor = query.cursor ? Number(query.cursor) : null;
+    }
+}
+
+// [응답] 내가 작성한 리뷰 목록 조회
+export class UserReviewListResponseDto {
+    constructor(reviews, nextCursor) {
+        this.reviews = reviews.map((r) => ({
+            reviewId: r.id,
+            content: r.content,
+            store: {
+                id: r.store.id,
+                name: r.store.name,
+            },
+        }));
+        this.nextCursor = nextCursor;
+    }
+}

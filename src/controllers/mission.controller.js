@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
-import { bodyToMission, responseFromMission } from "../dtos/mission.dto.js";
-import { createMission } from "../services/mission.service.js";
+import { bodyToMission, responseFromMission, ListStoreMissionsRequestDto, MissionListResponseDto } from "../dtos/mission.dto.js";
+import { createMission, listStoreMissions } from "../services/mission.service.js";
 
 export const handleCreateMission = async (req, res, next) => {
     try {
@@ -14,5 +14,21 @@ export const handleCreateMission = async (req, res, next) => {
         res.status(StatusCodes.CREATED).json({ result: response });
     } catch (error) {
         next(error);
+    }
+};
+
+// 특정 가게의 미션 목록 조회
+export const handleListStoreMissions = async (req, res, next) => {
+    try {
+        const requestDto = new ListStoreMissionsRequestDto(req.params);
+        const missions = await listStoreMissions(requestDto.storeId);
+        const responseDto = new MissionListResponseDto(missions);
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            data: responseDto,
+        });
+    } catch (err) {
+        next(err);
     }
 };
