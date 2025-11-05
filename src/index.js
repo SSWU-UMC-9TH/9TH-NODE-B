@@ -16,6 +16,26 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
+/**
+ * 공통 응답을 사용할 수 있는 헬퍼 함수 등록
+ */
+app.use((req, res, next) => {
+    res.success = (success) => {
+        return res.json({ resultType: "SUCCESS", error: null, success });
+    };
+
+    res.error = ({ errorCode = "unknown", reason = null, data = null }) => {
+        return res.json({
+            resultType: "FAIL",
+            error: { errorCode, reason, data },
+            success: null,
+        });
+    };
+
+    next();
+});
+
+
 app.use(morgan('dev'));  // 로그 포맷: dev
 app.use(cookieParser());
 
@@ -127,19 +147,18 @@ app.use((req, res, next) => {
     });
 });
 
-// 전역 에러 핸들러
+/**
+ * 전역 오류를 처리하기 위한 미들웨어
+ */
 app.use((err, req, res, next) => {
-    console.error("[Error Handler]", err);
+    if (res.headersSent) {
+        return next(err);
+    }
 
-    const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
-    const message = err.message || "서버 내부 오류가 발생했습니다.";
-
-    res.status(statusCode).json({
-        success: false,
-        error: {
-            message,
-            statusCode,
-        },
+    res.status(err.statusCode || 500).error({
+        errorCode: err.errorCode || "unknown",
+        reason: err.reason || err.message || null,
+        data: err.data || null,
     });
 });
 
