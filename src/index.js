@@ -4,6 +4,7 @@ import express from "express";
 import { StatusCodes } from "http-status-codes";
 import morgan from 'morgan';
 import cookieParser from "cookie-parser";
+import compression from "compression";
 
 import { handleUserSignUp } from "./controllers/user.controller.js";
 import { handleCreateStore, handleListStoreReviews } from "./controllers/store.controller.js";
@@ -44,6 +45,14 @@ app.use(express.static("public")); // 정적 파일 접근
 // 미들웨어 세팅
 app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
 app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
+
+// 응답 압축 미들웨어 추가
+app.use(
+    compression({
+        threshold: 512, // 0.5KB 이상일 때만 압축
+        brotli: { enabled: true, zlib: { quality: 6 } },
+    })
+);
 
 app.get("/", (req, res) => {
     res.send("Hello World!");
@@ -135,6 +144,16 @@ app.get("/api/v1/stores/:storeId/reviews", handleListStoreReviews);     // 리�
 app.get("/api/v1/users/:userId/reviews", handleListUserReviews);        // 내가 작성한 리뷰 목록
 app.get("/api/v1/stores/:storeId/missions", handleListStoreMissions);   // 특정 가게의 미션 목록
 app.get("/api/v1/users/:userId/missions/active", handleListUserActiveMissions);     // 내가 진행 중인 미션 목록
+
+// gzip 테스트 전용 라우트
+app.get("/api/test/large", (req, res) => {
+    const dummyText = "압축테스트".repeat(2000); // 약 10KB
+    res.json({ message: dummyText });
+});
+
+app.get("/ping", (req, res) => {
+    res.send("pong ✅ 현재 index.js 실행 중입니다.");
+});
 
 // 404 Not Found 핸들러
 app.use((req, res, next) => {
