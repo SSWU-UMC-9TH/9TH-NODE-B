@@ -151,10 +151,6 @@ app.get("/api/test/large", (req, res) => {
     res.json({ message: dummyText });
 });
 
-app.get("/ping", (req, res) => {
-    res.send("pong ✅ 현재 index.js 실행 중입니다.");
-});
-
 // 404 Not Found 핸들러
 app.use((req, res, next) => {
     res.status(StatusCodes.NOT_FOUND).json({
