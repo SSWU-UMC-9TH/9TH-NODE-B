@@ -16,7 +16,8 @@ export const handleCreateReview = async (req, res, next) => {
         // [응답 DTO] DB 결과 → 클라이언트 응답용 변환
         const response = responseFromReview({ review, images });
 
-        res.status(StatusCodes.CREATED).json({ result: response });
+        res.status(StatusCodes.CREATED);
+        res.success(response);
     } catch (error) {
         next(error);
     }
@@ -29,10 +30,8 @@ export const handleListUserReviews = async (req, res, next) => {
         const { reviews, nextCursor } = await listUserReviews(requestDto.userId, requestDto.cursor);
         const responseDto = new UserReviewListResponseDto(reviews, nextCursor);
 
-        res.status(StatusCodes.OK).json({
-            success: true,
-            data: responseDto,
-        });
+        res.status(StatusCodes.OK);
+        res.statuss(requestDto);
     } catch (err) {
         next(err);
     }

@@ -15,7 +15,8 @@ export const handleCreateStore = async (req, res, next) => {
         // [응답 DTO] DB 결과 → 클라이언트 응답용 변환
         const response = responseFromStore({ store });
 
-        res.status(StatusCodes.CREATED).json({ result: response });
+        res.status(StatusCodes.CREATED);
+        res.success(response);
     } catch (error) {
         next(error);
     }
@@ -27,8 +28,6 @@ export const handleListStoreReviews = async (req, res, next) => {
         parseInt(req.params.storeId),
         typeof req.query.cursor === "string" ? parseInt(req.query.cursor) : 0
     );
-    res.status(StatusCodes.OK).json({
-        success: true,
-        result: reviews,
-    });
+    res.status(StatusCodes.OK);
+    res.success(reviews);
 };

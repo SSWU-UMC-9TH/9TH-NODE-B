@@ -14,7 +14,8 @@ export const handleUserMissionChallenge = async (req, res, next) => {
         const userMission = await createUserMission(storeId, missionId, userMissionData);
 
         const response = responseFromUserMission({ userMission });
-        res.status(StatusCodes.CREATED).json({ result: response });
+        res.status(StatusCodes.CREATED);
+        res.status(response);
     } catch (error) {
         next(error);
     }
@@ -27,10 +28,8 @@ export const handleListUserActiveMissions = async (req, res, next) => {
         const missions = await listUserActiveMissions(requestDto.userId);
         const responseDto = new UserActiveMissionListResponseDto(missions);
 
-        res.status(StatusCodes.OK).json({
-            success: true,
-            data: responseDto,
-        });
+        res.status(StatusCodes.OK);
+        res.status(responseDto);
     } catch (err) {
         next(err);
     }
