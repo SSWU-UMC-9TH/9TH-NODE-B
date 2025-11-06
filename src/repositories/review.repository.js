@@ -10,20 +10,15 @@ export const getStoreById = async (storeId) => {
 
 // 특정 가게 리뷰 작성
 export const addReview = async (data) => {
-    try {
-        const review = await prisma.review.create({
-            data: {
-                userId: data.userId,
-                storeId: data.storeId,
-                body: data.body,
-                score: data.score,
-                createdAt: new Date(),
-            },
-        });
-        return review.id;
-    } catch (err) {
-        throw new Error(`리뷰 등록 중 오류 발생: ${err.message}`);
-    }
+    return await prisma.review.create({
+        data: {
+            userId: data.userId,
+            storeId: data.storeId,
+            body: data.body,
+            score: data.score,
+            createdAt: new Date(),
+        },
+    });
 };
 
 // 리뷰 이미지 추가
