@@ -13,12 +13,10 @@ export const addStore = async (data) => {
     try {
         const store = await prisma.store.create({
             data: {
-                regionId: data.regionId,
                 name: data.name,
                 address: data.address,
                 score: data.score,
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                region: { connect: { id: data.regionId } },
             },
         });
         return store.id;

@@ -17,6 +17,7 @@ datasource db {
 model User {
   id            Int      @id @default(autoincrement())
   email         String   @unique(map: "email") @db.VarChar(255)
+  password      String
   name          String   @db.VarChar(100)
   gender        String   @db.VarChar(15)
   birth         DateTime @db.Date
@@ -52,9 +53,22 @@ model UserFavorCategory {
   @@map("user_favor_category")
 }
 
-model Store {
+model Region {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(100)
+
+  stores Store[]
+
+  @@map("region")
+}
+
+model Store {
+  id       Int     @id @default(autoincrement())
+  name     String  @db.VarChar(100)
+  address  String? @db.VarChar(255)
+  score    Int?
+  regionId Int?    @map("region_id")
+  region   Region? @relation(fields: [regionId], references: [id])
 
   userStoreReviews UserStoreReview[]
   Mission          Mission[]

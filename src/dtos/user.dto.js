@@ -9,7 +9,7 @@ export const bodyToUser = (body) => {
         birth, // 필수
         address: body.address || "", //선택 
         detailAddress: body.detailAddress || "", //선택 
-        phoneNumber: body.phoneNumber,//필수
+        phoneNumber: String(body.phoneNumber),//필수
         preferences: body.preferences,// 필수 
     };
 };

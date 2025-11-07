@@ -11,7 +11,8 @@ export const handleCreateMission = async (req, res, next) => {
         const mission = await createMission(storeId, missionData);
 
         const response = responseFromMission({ mission });
-        res.status(StatusCodes.CREATED).json({ result: response });
+        res.status(StatusCodes.CREATED);
+        res.success(response);
     } catch (error) {
         next(error);
     }
@@ -24,10 +25,8 @@ export const handleListStoreMissions = async (req, res, next) => {
         const missions = await listStoreMissions(requestDto.storeId);
         const responseDto = new MissionListResponseDto(missions);
 
-        res.status(StatusCodes.OK).json({
-            success: true,
-            data: responseDto,
-        });
+        res.status(StatusCodes.OK);
+        res.success(responseDto);
     } catch (err) {
         next(err);
     }
