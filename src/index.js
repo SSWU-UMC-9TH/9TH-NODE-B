@@ -41,6 +41,12 @@ app.use(morgan('dev'));  // 로그 포맷: dev
 app.use(cookieParser());
 
 app.use(cors()); // cors 방식 허용
+/*
+특정 프론트엔드 주소 허용 시 다음과 같이 사용
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://example.com']
+}));
+*/
 app.use(express.static("public")); // 정적 파일 접근
 // 미들웨어 세팅
 app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
