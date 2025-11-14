@@ -10,7 +10,7 @@ export const handleListStoreReviews = async (req, res, next) => {
         : 0;
 
     const reviews = await listStoreReviews(storeId, cursor);
-    res.status(StatusCodes.OK).json({ result: reviews });
+    res.status(StatusCodes.OK).success(reviews);
   } catch (error) {
     next(error);
   }
@@ -25,7 +25,7 @@ export const handleListMyReviews = async (req, res, next) => {
         : 0;
 
     const reviews = await listMyReviews(userId, cursor);
-    res.status(StatusCodes.OK).json({ result: reviews });
+    res.status(StatusCodes.OK).success(reviews);
   } catch (error) {
     next(error);
   }

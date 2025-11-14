@@ -11,7 +11,7 @@ export const handleListStoreMissions = async (req, res, next) => {
         : 0;
 
     const missions = await listStoreMissions(storeId, cursor);
-    res.status(StatusCodes.OK).json({ result: missions });
+    res.status(StatusCodes.OK).success(missions);
   } catch (error) {
     next(error);
   }
@@ -27,7 +27,7 @@ export const handleListMyMissions = async (req, res, next) => {
         : 0;
 
     const missions = await listMyMissions(userId, cursor);
-    res.status(StatusCodes.OK).json({ result: missions });
+    res.status(StatusCodes.OK).success(missions);
   } catch (error) {
     next(error);
   }

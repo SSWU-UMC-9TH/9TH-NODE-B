@@ -8,7 +8,7 @@ export const handleAddStore = async (req, res, next) => {
         const dtoResult = bodyToaddStore(req.body);
         console.log("DTO 변환 후:", dtoResult);
         const addStoreId = await storeUpdate(dtoResult);
-        res.status(StatusCodes.OK).json({result: addStoreId});
+        res.status(StatusCodes.OK).success(addStoreId);
     } catch (error) {
         next(error); // 에러를 에러 핸들링 미들웨어로 전달
     }

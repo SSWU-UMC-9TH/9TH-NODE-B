@@ -1,3 +1,4 @@
+import { InvalidStoreDataError, ValidationError } from "../errors.js";
 import {
   addStore,
 } from "../repositories/addStore.repository.js";
@@ -11,10 +12,10 @@ export const storeUpdate = async (data) => {
   
   // 에러 체크
   if (!data) {
-    throw new Error(`Service: data가 없습니다`);
+    throw new ValidationError("가게 데이터가 없습니다.", data);
   }
   if (data.region_id === undefined || data.region_id === null) {
-    throw new Error(`Service: region_id가 없습니다. data: ${JSON.stringify(data)}`);
+    throw new InvalidStoreDataError("region_id가 필요합니다.", data);
   }
   
   // Repository에 전달할 객체 생성

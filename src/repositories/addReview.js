@@ -1,4 +1,5 @@
 import { prisma } from "../db.config.js";
+import { StoreNotFoundError } from "../errors.js";
 
 // 리뷰 데이터 삽입
 export const addReview = async (data) => {
@@ -8,7 +9,7 @@ export const addReview = async (data) => {
   });
 
   if (!store) {
-    throw new Error("가게가 존재하지 않습니다.");
+    throw new StoreNotFoundError("가게가 존재하지 않습니다.", { store_id: data.store_id });
   }
 
   // 리뷰 삽입

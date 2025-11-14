@@ -5,7 +5,7 @@ import { storeMissionUpdate } from "../services/addStoreMission.service.js";
 export const handleAddStoreMission = async (req, res, next) => {
     try {
         const addStoreMissionId = await storeMissionUpdate(bodyToaddStoreMission(req.body));
-        res.status(StatusCodes.OK).json({result: addStoreMissionId});
+        res.status(StatusCodes.OK).success(addStoreMissionId);
     } catch (error) {
         next(error); // 에러를 에러 핸들링 미들웨어로 전달
     }

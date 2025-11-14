@@ -1,4 +1,5 @@
 import { prisma } from "../db.config.js";
+import { DuplicateUserMissionError, ValidationError } from "../errors.js";
 
 export const userMission = async (data) => {
   try {
@@ -11,7 +12,7 @@ export const userMission = async (data) => {
     });
 
     if (existing) {
-      throw new Error("이미 도전하고 있는 미션입니다.");
+      throw new DuplicateUserMissionError("이미 도전하고 있는 미션입니다.", data);
     }
 
     // 새로운 user_mission 생성
@@ -27,9 +28,10 @@ export const userMission = async (data) => {
 
     return Number(result.id);
   } catch (err) {
-    if (err.message === "이미 도전하고 있는 미션입니다.") {
+    // 이미 커스텀 Error면 그대로 throw
+    if (err.errorCode) {
       throw err;
     }
-    throw new Error(`오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err.message})`);
+    throw new ValidationError(`오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err.message})`, data);
   }
 };
