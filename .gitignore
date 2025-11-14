@@ -1,0 +1,8 @@
+node_modules/
+
+.env
+.env.*
+debug-test.js
+초기_코드_문제점_정리.md
+backup_umc_db_20251102_161342.sql
+test-signup.json

@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             BigInt            @id @default(autoincrement()) @db.BigInt
+  email          String            @unique(map: "email") @db.VarChar(255)
+  password       String?           @db.VarChar(255)
+  name           String            @db.VarChar(20)
+  gender         String?          @db.VarChar(10)
+  birth          DateTime?         @db.Date
+  address        String?          @db.VarChar(30)
+  phoneNumber    String?          @map("phone_number") @db.VarChar(30)
+  agree          Boolean?         @db.TinyInt
+  status         String?          @db.VarChar(15)
+  inactiveDate   DateTime?        @map("inactive_date") @db.DateTime
+  createdAt      DateTime?        @map("created_at") @db.DateTime(6)
+  updatedAt      DateTime?        @map("updated_at") @db.DateTime(6)
+  point          Int?
+  
+  userMissions      UserMission[]
+  reviews           Review[]
+  preferenceSurveys PreferenceSurvey[]
+
+  @@map("user")
+}
+
+model Store {
+  id        BigInt    @id @default(autoincrement()) @db.BigInt
+  regionId  BigInt    @map("region_id") @db.BigInt
+  name      String    @db.VarChar(20)
+  address   String?   @db.VarChar(30)
+  operTime  Json?     @map("oper_time")
+  createdAt DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt DateTime? @map("updated_at") @db.DateTime(6)
+
+  reviews  Review[]
+  missions Mission[]
+
+  @@map("store")
+}
+
+model Review {
+  id            BigInt     @id @default(autoincrement()) @db.BigInt
+  userId        BigInt     @map("user_id") @db.BigInt
+  storeId       BigInt     @map("store_id") @db.BigInt
+  userMissionId BigInt?    @map("user_mission_id") @db.BigInt
+  reviewImageId Int?       @default(0) @map("review_image_id")
+  content       String?    @db.Text
+  score         Int?
+  createdAt     DateTime?  @map("created_at") @db.DateTime(6)
+  updatedAt     DateTime? @map("updated_at") @db.DateTime(6)
+
+  user        User        @relation(fields: [userId], references: [id])
+  store       Store       @relation(fields: [storeId], references: [id])
+  userMission UserMission? @relation(fields: [userMissionId], references: [id])
+
+  @@map("review")
+}
+
+model Mission {
+  id                BigInt    @id @default(autoincrement()) @db.BigInt
+  regionId          BigInt?   @map("region_id") @db.BigInt
+  storeId           BigInt    @map("store_id") @db.BigInt
+  title             String?   @db.VarChar(40)
+  createdAt         DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt         DateTime? @map("updated_at") @db.DateTime(6)
+  startedAt         DateTime? @map("started_at") @db.DateTime
+  endAt             DateTime? @map("end_at") @db.DateTime
+  isActive          Boolean?  @map("is_active") @db.TinyInt
+  requiredStoreCount Int?      @map("required_store_count")
+  minAmount         Int?      @map("min_amount")
+  point             Int?
+
+  store       Store        @relation(fields: [storeId], references: [id])
+  userMissions UserMission[]
+
+  @@map("mission")
+}
+
+model UserMission {
+  id           BigInt    @id @default(autoincrement()) @db.BigInt
+  userId       BigInt    @map("user_id") @db.BigInt
+  missionId    BigInt    @map("mission_id") @db.BigInt
+  status       String?   @db.VarChar(20)
+  progressCount Int?     @map("progress_count")
+  createdAt    DateTime? @map("created_at") @db.DateTime
+  reviewId     Int?      @default(0)
+
+  user     User     @relation(fields: [userId], references: [id])
+  mission  Mission  @relation(fields: [missionId], references: [id])
+  reviews  Review[]
+
+  @@map("user_mission")
+}
+
+model FoodCategory {
+  id        BigInt    @id @default(autoincrement()) @db.BigInt
+  name      String    @db.VarChar(20)
+
+  preferenceSurveys PreferenceSurvey[]
+
+  @@map("food_category")
+}
+
+model PreferenceSurvey {
+  id             BigInt    @id @default(autoincrement()) @db.BigInt
+  userId         BigInt    @map("user_id") @db.BigInt
+  foodCategoryId BigInt    @map("food_category_id") @db.BigInt
+  createdAt      DateTime? @map("created_at") @db.DateTime(6)
+  updatedAt      DateTime? @map("updated_at") @db.DateTime(6)
+
+  user         User         @relation(fields: [userId], references: [id])
+  foodCategory FoodCategory @relation(fields: [foodCategoryId], references: [id])
+
+  @@map("preference_survey")
+}
