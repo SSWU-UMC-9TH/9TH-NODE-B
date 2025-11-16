@@ -1,4 +1,5 @@
 import { prisma } from "../db.config.js";
+import { UserNotFoundError } from "../errors.js";
 
 // User 데이터 삽입
 export const addUser = async (data) => {
@@ -14,8 +15,16 @@ export const addUser = async (data) => {
 
 // 사용자 정보 얻기
 export const getUser = async (userId) => {
-  const user = await prisma.user.findFirstOrThrow({ where: { id: userId } });
-  return user;
+  try {
+    const user = await prisma.user.findFirstOrThrow({ where: { id: userId } });
+    return user;
+  } catch (err) {
+    // Prisma의 NotFoundError를 UserNotFoundError로 변환
+    if (err.code === 'P2025') {
+      throw new UserNotFoundError("사용자를 찾을 수 없습니다.", { userId });
+    }
+    throw err;
+  }
 };
 
 // 음식 선호 카테고리 매핑

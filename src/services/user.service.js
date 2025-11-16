@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { responseFromUser } from "../dtos/user.dto.js";
+import { DuplicateUserEmailError, InvalidPasswordError } from "../errors.js";
 import {
   addUser,
   getUser,
@@ -10,7 +11,7 @@ import {
 export const userSignUp = async (data) => {
   // 비밀번호 검증
   if (!data.password || data.password.length < 8) {
-    throw new Error("비밀번호는 8자 이상이어야 합니다.");
+    throw new InvalidPasswordError("비밀번호는 8자 이상이어야 합니다.", data);
   }
 
   // 비밀번호 해싱 (salt rounds: 10)
@@ -33,7 +34,7 @@ export const userSignUp = async (data) => {
 
 
   if (joinUserId === null) {
-    throw new Error("이미 존재하는 이메일입니다.");
+    throw new DuplicateUserEmailError("이미 존재하는 이메일입니다.", data);
   }
 
   for (const preference of data.preferences) {
