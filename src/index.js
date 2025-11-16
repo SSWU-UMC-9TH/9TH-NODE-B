@@ -4,6 +4,8 @@ import cors from 'cors'
 import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
 import compression from 'compression'
+import swaggerAutogen from "swagger-autogen"
+import swaggerUiExpress from "swagger-ui-express"
 
 // 컨트롤러 import
 import { handleUserSignUp } from './controllers/user.controller.js'
@@ -45,6 +47,39 @@ app.use(cookieParser())  // 쿠키 파싱
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))  // form 데이터 파싱
+
+// Swagger UI 설정
+app.use(
+  "/docs",
+  swaggerUiExpress.serve,
+  swaggerUiExpress.setup({}, {
+    swaggerOptions: {
+      url: "/openapi.json",
+    },
+  })
+);
+
+// Swagger OpenAPI JSON 엔드포인트
+app.get("/openapi.json", async (req, res, next) => {
+  // #swagger.ignore = true
+  const options = {
+    openapi: "3.0.0",
+    disableLogs: true,
+    writeOutputFile: false,
+  };
+  const outputFile = "/dev/null"; // 파일 출력은 사용하지 않습니다.
+  const routes = ["./src/index.js"];
+  const doc = {
+    info: {
+      title: "UMC 9th",
+      description: "UMC 9th Node.js 테스트 프로젝트입니다.",
+    },
+    host: "localhost:3000",
+  };
+
+  const result = await swaggerAutogen(options)(outputFile, routes, doc);
+  res.json(result ? result.data : null);
+});
 
 // 라우트 설정
 app.get('/', (req, res) => {
