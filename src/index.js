@@ -7,6 +7,9 @@ import cookieParser from "cookie-parser";
 import compression from "compression";
 import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
+import passport from "passport";
+import { prisma } from "./db.config.js";
+import { googleStrategy, jwtStrategy } from "./auth.config.js";
 
 import { handleUserSignUp } from "./controllers/user.controller.js";
 import { handleCreateStore, handleListStoreReviews } from "./controllers/store.controller.js";
@@ -15,6 +18,9 @@ import { handleCreateMission, handleListStoreMissions } from "./controllers/miss
 import { handleUserMissionChallenge, handleListUserActiveMissions } from "./controllers/userMission.controller.js";
 
 dotenv.config();
+
+passport.use(googleStrategy);
+passport.use(jwtStrategy);
 
 const app = express();
 const port = process.env.PORT;
@@ -90,20 +96,14 @@ app.get('/getcookie', (req, res) => {
     }
 });
 
-const isLogin = (req, res, next) => {
-    // cookie-parser가 만들어준 req.cookies 객체에서 username을 확인
-    const { username } = req.cookies;
+const isLogin = passport.authenticate('jwt', { session: false });
 
-    if (username) {
-
-        console.log(`[인증 성공] ${username}님, 환영합니다.`);
-        next();
-    } else {
-
-        console.log('[인증 실패] 로그인이 필요합니다.');
-        res.status(401).send('<script>alert("로그인이 필요합니다!");location.href="/login";</script>');
-    }
-};
+app.get('/mypage', isLogin, (req, res) => {
+    res.status(200).success({
+        message: `인증 성공! ${req.user.name}님의 마이페이지입니다.`,
+        user: req.user,
+    });
+});
 
 // swagger 설정
 app.use(
@@ -131,6 +131,21 @@ app.get("/openapi.json", async (req, res, next) => {
             description: "UMC 9th Node.js 테스트 프로젝트입니다.",
         },
         host: "localhost:3000",
+        // Swagger에서 Authorize 테스트를 하기 위한 코드 추가
+        schemes: ["http"],
+        securityDefinitions: {
+            BearerAuth: {
+                type: "apiKey",
+                name: "Authorization",
+                in: "header",
+                description: "JWT Authorization header using the Bearer scheme. Example: \"Bearer <token>\""
+            }
+        },
+        security: [
+            {
+                BearerAuth: []
+            }
+        ]
     };
 
     const result = await swaggerAutogen(options)(outputFile, routes, doc);
@@ -173,6 +188,31 @@ app.get('/set-logout', (req, res) => {
     res.clearCookie('username');
     res.send('로그아웃 완료 (쿠키 삭제). <a href="/">메인으로</a>');
 });
+
+app.get("/oauth2/login/google",
+    passport.authenticate("google", {
+        session: false
+    })
+);
+app.get(
+    "/oauth2/callback/google",
+    passport.authenticate("google", {
+        session: false,
+        failureRedirect: "/login-failed",
+    }),
+    (req, res) => {
+        const tokens = req.user;
+
+        res.status(200).json({
+            resultType: "SUCCESS",
+            error: null,
+            success: {
+                message: "Google 로그인 성공!",
+                tokens: tokens, // { "accessToken": "...", "refreshToken": "..." }
+            }
+        });
+    }
+);
 
 app.post("/api/v1/users/signup", handleUserSignUp);     // 회원가입
 app.post("/api/v1/stores", handleCreateStore);          // 가게 등록
