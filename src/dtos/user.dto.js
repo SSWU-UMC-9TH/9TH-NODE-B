@@ -1,27 +1,36 @@
 export const bodyToUser = (body) => {
-  const birth = new Date(body.birth); //날짜 변환
-
   return {
-    email: body.email, //필수 
-    password: body.password, // 필수 - 비밀번호 (해싱 전)
-    name: body.name, // 필수
-    gender: body.gender, // 필수
-    birth, // 필수
-    address: body.address || "", //선택 
-    // detailAddress: body.detailAddress || "", //선택 
-    phoneNumber: body.phoneNumber,//필수
-    preferences: body.preferences,// 필수
-    agree: body.agree || 1,
-    status: body.status || 'Active',
-    inactiveDate: body.inactiveDate || null,
-    point: body.point || 0
+    email: body.email,
+    password: body.password,
+    name: body.name,
+    gender: body.gender,
+    birth: body.birth ? new Date(body.birth) : undefined,
+    address: body.address,
+    phoneNumber: body.phoneNumber,
+    preferences: body.preferences || [],
+    agree: body.agree,
+    status: body.status,
+    inactiveDate: body.inactiveDate ? new Date(body.inactiveDate) : undefined,
+    point: body.point,
   };
 };
 
+export const bodyToUserUpdate = (body) => {
+  return {
+    name: body.name,
+    gender: body.gender,
+    birth: body.birth ? new Date(body.birth) : undefined,
+    address: body.address,
+    phoneNumber: body.phoneNumber,
+    password: body.password,
+    agree: body.agree,
+    status: body.status,
+    inactiveDate: body.inactiveDate ? new Date(body.inactiveDate) : undefined,
+    point: body.point,
+  };
+};
 
 export const responseFromUser = ({ user, preferences }) => {
-  if (!user) return null;
-
   return {
     id: Number(user.id),
     email: user.email,
@@ -30,13 +39,13 @@ export const responseFromUser = ({ user, preferences }) => {
     birth: user.birth,
     address: user.address,
     status: user.status,
-    inactiveDate: user.inactiveDate ?? null,
-    phoneNumber: user.phoneNumber ?? null,
-    point: user.point ?? 0,
-    preferences: (preferences ?? []).map(p => ({
-      id: Number(p.id),
-      categoryId: Number(p.foodCategoryId),
-      name: p.foodCategory?.name ?? null
+    inactiveDate: user.inactiveDate,
+    phoneNumber: user.phoneNumber,
+    point: user.point,
+    preferences: preferences.map((pref) => ({
+      id: Number(pref.id),
+      categoryId: Number(pref.foodCategoryId),
+      name: pref.foodCategory?.name || null,
     })),
   };
 };

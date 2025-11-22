@@ -32,6 +32,17 @@ export class UserNotFoundError extends Error {
   }
 }
 
+export class InvalidProviderError extends Error {
+  errorCode = "U004";
+  statusCode = 400;
+
+  constructor(reason = "잘못된 로그인 방식입니다.", data = null) {
+    super(reason);
+    this.reason = reason;
+    this.data = data;
+  }
+}
+
 // 가게 관련 에러
 export class StoreNotFoundError extends Error {
   errorCode = "S001";

@@ -12,14 +12,13 @@ export const handleAddReview = async (req, res, next) => {
             schema: {
               type: "object",
               properties: {
-                user_id: { type: "number", example: 1 },
                 store_id: { type: "number", example: 1 },
                 user_mission_id: { type: "number", example: 0 },
                 review_image_id: { type: "number", example: 0 },
                 content: { type: "string", example: "맛있어요!" },
                 score: { type: "number", example: 5 }
               },
-              required: ["user_id", "store_id", "content", "score"]
+              required: ["store_id", "content", "score"]
             }
           }
         }
@@ -68,7 +67,14 @@ export const handleAddReview = async (req, res, next) => {
       };
     */
     try {
-        const reviewId = await addStoreReview(bodyToaddReview(req.body));
+        // JWT 인증된 사용자 ID 사용 (isLogin 미들웨어를 통해 보장됨)
+        const userId = BigInt(req.user.id);
+        
+        const reviewData = {
+            ...bodyToaddReview(req.body),
+            user_id: userId,
+        };
+        const reviewId = await addStoreReview(reviewData);
         res.status(StatusCodes.OK).success(reviewId);
     } catch (error) {
         next(error); // 에러를 에러 핸들링 미들웨어로 전달

@@ -152,6 +152,18 @@ export const handleListMyMissions = async (req, res, next) => {
     };
   */
   try {
+    // 본인만 조회 가능하도록 검증
+    const requestedUserId = BigInt(req.params.userId);
+    const authenticatedUserId = req.user ? BigInt(req.user.id) : null;
+
+    if (!authenticatedUserId || requestedUserId !== authenticatedUserId) {
+      return res.status(403).error({
+        errorCode: "FORBIDDEN",
+        reason: "본인의 미션만 조회할 수 있습니다.",
+        data: null,
+      });
+    }
+
     const userId = parseInt(req.params.userId);
     const cursor =
       typeof req.query.cursor === "string"
