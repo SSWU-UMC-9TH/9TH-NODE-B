@@ -12,13 +12,12 @@ export const handleUserMission = async (req, res, next) => {
             schema: {
               type: "object",
               properties: {
-                user_id: { type: "number", example: 1 },
                 mission_id: { type: "number", example: 1 },
                 review_id: { type: "number", example: 0 },
                 status: { type: "string", example: "Before starting" },
                 progress_count: { type: "number", example: 0 }
               },
-              required: ["user_id", "mission_id"]
+              required: ["mission_id"]
             }
           }
         }
@@ -89,7 +88,14 @@ export const handleUserMission = async (req, res, next) => {
       };
     */
     try {
-        const userMissionId = await userMissionUpdate(bodyToaddUserMission(req.body));
+        // JWT 인증된 사용자 ID 사용 (isLogin 미들웨어를 통해 보장됨)
+        const userId = BigInt(req.user.id);
+        
+        const missionData = {
+            ...bodyToaddUserMission(req.body),
+            user_id: userId,
+        };
+        const userMissionId = await userMissionUpdate(missionData);
         res.status(StatusCodes.OK).success(userMissionId);
     } catch (error) {
         next(error); // 에러를 에러 핸들링 미들웨어로 전달
