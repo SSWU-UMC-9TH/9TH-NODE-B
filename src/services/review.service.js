@@ -1,8 +1,8 @@
 import { addReview, addReviewImage, getStoreById, getUserReviews } from "../repositories/review.repository.js";
 import { NotFoundError, InternalServerError } from "../errors.js";
 
-export const createReview = async (storeId, data) => {
-    const { userId, body, score, images } = data;
+export const createReview = async (storeId, userId, data) => {
+    const { body, score, images } = data;
 
     // store 존재 여부 확인
     const store = await getStoreById(storeId);

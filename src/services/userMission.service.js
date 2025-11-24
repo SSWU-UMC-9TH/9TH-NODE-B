@@ -1,9 +1,7 @@
 import { getMissionById, addUserMission, findUserMission, getUserActiveMissions } from "../repositories/userMission.repository.js";
 import { NotFoundError, BadRequestError, InternalServerError } from "../errors.js";
 
-export const createUserMission = async (storeId, missionId, data) => {
-    const { userId } = data;
-
+export const createUserMission = async (storeId, missionId, userId) => {
     // 미션 존재 여부 검증
     const mission = await getMissionById(missionId);
     if (!mission || mission.store_id != storeId) {

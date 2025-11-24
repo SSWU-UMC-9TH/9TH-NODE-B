@@ -1,7 +1,6 @@
 // [요청 DTO]
 export const bodyToUserMission = (body) => {
     return {
-        userId: body.userId,
         status: "진행중"
     };
 };

@@ -94,14 +94,15 @@ export const handleCreateReview = async (req, res, next) => {
     };
     */
     try {
+
         const { storeId } = req.params;
-        console.log(`가게(${storeId})에 대한 리뷰 등록 요청:`, req.body);
+        const userId = req.user.id; // JWT 인증된 유저
 
         // [요청 DTO] body → DB insert용 구조 변환
         const reviewData = bodyToReview(req.body);
 
         // [Service 호출] 리뷰 등록 및 이미지 추가 처리
-        const { review, images } = await createReview(storeId, reviewData);
+        const { review, images } = await createReview(storeId, userId, reviewData);
 
         // [응답 DTO] DB 결과 → 클라이언트 응답용 변환
         const response = responseFromReview({ review, images });
@@ -117,7 +118,6 @@ export const handleCreateReview = async (req, res, next) => {
 export const handleListUserReviews = async (req, res, next) => {
     /*
     #swagger.summary = '내가 작성한 리뷰 목록 조회 API';
-
     #swagger.parameters['userId'] = {
         in: 'path',
         description: '리뷰 조회 대상 유저 ID',

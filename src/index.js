@@ -215,15 +215,15 @@ app.get(
 );
 
 app.post("/api/v1/users/signup", handleUserSignUp);     // 회원가입
-app.post("/api/v1/stores", handleCreateStore);          // 가게 등록
-app.post("/api/v1/stores/:storeId/reviews", handleCreateReview);        // 리뷰 등록
-app.post("/api/v1/stores/:storeId/missions", handleCreateMission);      // 미션 등록
-app.post("/api/v1/stores/:storeId/missions/:missionId/challenge", handleUserMissionChallenge);      // 가게 도전 중인 미션에 추가
+app.post("/api/v1/stores", isLogin, handleCreateStore);          // 가게 등록
+app.post("/api/v1/stores/:storeId/reviews", isLogin, handleCreateReview);        // 리뷰 등록
+app.post("/api/v1/stores/:storeId/missions", isLogin, handleCreateMission);      // 미션 등록
+app.post("/api/v1/stores/:storeId/missions/:missionId/challenge", isLogin, handleUserMissionChallenge);      // 가게 도전 중인 미션에 추가
 
 app.get("/api/v1/stores/:storeId/reviews", handleListStoreReviews);     // 리뷰 조회
 app.get("/api/v1/users/:userId/reviews", handleListUserReviews);        // 내가 작성한 리뷰 목록
 app.get("/api/v1/stores/:storeId/missions", handleListStoreMissions);   // 특정 가게의 미션 목록
-app.get("/api/v1/users/:userId/missions/active", handleListUserActiveMissions);     // 내가 진행 중인 미션 목록
+app.get("/api/v1/users/me/missions/active", isLogin, handleListUserActiveMissions);     // 내가 진행 중인 미션 목록
 
 app.patch("/api/v1/users/me", isLogin, handleUpdateMyInfo);     // 개인정보 수정 API
 
