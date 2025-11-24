@@ -9,7 +9,7 @@ import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
 import passport from "passport";
 import { prisma } from "./db.config.js";
-import { googleStrategy, jwtStrategy } from "./auth.config.js";
+import { googleStrategy, jwtStrategy, kakaoStrategy } from "./auth.config.js";
 
 import { handleUserSignUp, handleUpdateMyInfo } from "./controllers/user.controller.js";
 import { handleCreateStore, handleListStoreReviews } from "./controllers/store.controller.js";
@@ -21,6 +21,7 @@ dotenv.config();
 
 passport.use(googleStrategy);
 passport.use(jwtStrategy);
+passport.use(kakaoStrategy);
 
 const app = express();
 const port = process.env.PORT;
@@ -189,6 +190,7 @@ app.get('/set-logout', (req, res) => {
     res.send('로그아웃 완료 (쿠키 삭제). <a href="/">메인으로</a>');
 });
 
+// 구글 로그인
 app.get("/oauth2/login/google",
     passport.authenticate("google", {
         session: false
@@ -209,6 +211,30 @@ app.get(
             success: {
                 message: "Google 로그인 성공!",
                 tokens: tokens, // { "accessToken": "...", "refreshToken": "..." }
+            }
+        });
+    }
+);
+
+// 카카오 로그인
+app.get("/oauth2/login/kakao",
+    passport.authenticate("kakao", { session: false })
+);
+
+app.get("/oauth2/callback/kakao",
+    passport.authenticate("kakao", {
+        session: false,
+        failureRedirect: "/login-failed",
+    }),
+    (req, res) => {
+        const tokens = req.user;
+
+        res.status(200).json({
+            resultType: "SUCCESS",
+            error: null,
+            success: {
+                message: "Kakao 로그인 성공!",
+                tokens: tokens // { accessToken, refreshToken }
             }
         });
     }
