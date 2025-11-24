@@ -46,3 +46,18 @@ export const getUserPreferencesByUserId = async (userId) => {
     });
     return preferences;
 };
+
+// 유저 정보 업데이트
+export const updateUser = async (userId, data) => {
+    return prisma.user.update({
+        where: { id: userId },
+        data
+    });
+};
+
+// 유저 정보 삭제
+export const clearPreferences = async (userId) => {
+    return prisma.userFavorCategory.deleteMany({
+        where: { userId }
+    });
+};

@@ -11,7 +11,7 @@ import passport from "passport";
 import { prisma } from "./db.config.js";
 import { googleStrategy, jwtStrategy } from "./auth.config.js";
 
-import { handleUserSignUp } from "./controllers/user.controller.js";
+import { handleUserSignUp, handleUpdateMyInfo } from "./controllers/user.controller.js";
 import { handleCreateStore, handleListStoreReviews } from "./controllers/store.controller.js";
 import { handleCreateReview, handleListUserReviews } from "./controllers/review.controller.js";
 import { handleCreateMission, handleListStoreMissions } from "./controllers/mission.controller.js";
@@ -224,6 +224,8 @@ app.get("/api/v1/stores/:storeId/reviews", handleListStoreReviews);     // 리�
 app.get("/api/v1/users/:userId/reviews", handleListUserReviews);        // 내가 작성한 리뷰 목록
 app.get("/api/v1/stores/:storeId/missions", handleListStoreMissions);   // 특정 가게의 미션 목록
 app.get("/api/v1/users/:userId/missions/active", handleListUserActiveMissions);     // 내가 진행 중인 미션 목록
+
+app.patch("/api/v1/users/me", isLogin, handleUpdateMyInfo);     // 개인정보 수정 API
 
 // gzip 테스트 전용 라우트
 app.get("/api/test/large", (req, res) => {
