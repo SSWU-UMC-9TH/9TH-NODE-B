@@ -3,7 +3,7 @@ name: deploy-durian  # 파이프라인 이름은 자유롭게 지어주세요
 on:
   push:
     branches:
-      - main-durian  # main 브랜치에 새로운 커밋이 올라왔을 떄 실행되도록 합니다
+      - Week10/#30  # main 브랜치에 새로운 커밋이 올라왔을 떄 실행되도록 합니다
   workflow_dispatch:  # 필요한 경우 수동으로 실행할 수도 있도록 합니다
 
 jobs:
