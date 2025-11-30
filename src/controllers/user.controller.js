@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { bodyToUser } from "../dtos/user.dto.js";
 import { userSignUp } from "../services/user.service.js";
+import passport from "passport";
 
 export const handleUserSignUp = async (req, res, next) => {
   /*
@@ -81,6 +82,60 @@ export const handleUserSignUp = async (req, res, next) => {
     console.error("회원가입 처리 중 오류:", err);
     next(err);
   }
+};
+
+// [추가] 로그인 API
+export const handleUserLogin = (req, res, next) => {
+  /*
+  #swagger.summary = '로그인 API';
+  #swagger.requestBody = {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            email: { type: "string", example: "test@gmail.com" },
+            password: { type: "string", example: "password1234" }
+          }
+        }
+      }
+    }
+  };
+  */
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      console.error("로그인 에러:", err);
+      return next(err);
+    }
+
+    if (!user) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        resultType: "FAIL",
+        error: {
+          errorCode: "A001",
+          reason: info.message || "로그인 실패"
+        }
+      });
+    }
+
+    // Passport 세션 로그인 처리
+    req.login(user, (loginErr) => {
+      if (loginErr) {
+        return next(loginErr);
+      }
+
+      // 로그인 성공 응답
+      return res.status(StatusCodes.OK).json({
+        resultType: "SUCCESS",
+        success: {
+          email: user.email,
+          name: user.name,
+          message: "로그인 성공"
+        }
+      });
+    });
+  })(req, res, next);
 };
 
 // 유저 정보 수정 API

@@ -1,6 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import session from "express-session";
 import { StatusCodes } from "http-status-codes";
 import morgan from 'morgan';
 import cookieParser from "cookie-parser";
@@ -9,22 +10,69 @@ import swaggerAutogen from "swagger-autogen";
 import swaggerUiExpress from "swagger-ui-express";
 import passport from "passport";
 import { prisma } from "./db.config.js";
-import { googleStrategy, jwtStrategy, kakaoStrategy } from "./auth.config.js";
+import { googleStrategy, jwtStrategy, kakaoStrategy, localStrategy } from "./auth.config.js";
+import { getUser } from "./repositories/user.repository.js";
 
-import { handleUserSignUp, handleUpdateMyInfo } from "./controllers/user.controller.js";
+import { handleUserSignUp, handleUpdateMyInfo, handleUserLogin } from "./controllers/user.controller.js";
 import { handleCreateStore, handleListStoreReviews } from "./controllers/store.controller.js";
 import { handleCreateReview, handleListUserReviews } from "./controllers/review.controller.js";
 import { handleCreateMission, handleListStoreMissions } from "./controllers/mission.controller.js";
 import { handleUserMissionChallenge, handleListUserActiveMissions } from "./controllers/userMission.controller.js";
 
 dotenv.config();
+const app = express();
+const port = process.env.PORT;
 
+// 미들웨어 세팅
+app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
+app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
+app.use(morgan('dev'));  // 로그 포맷: dev
+app.use(cookieParser());
+app.use(cors()); // cors 방식 허용
+/*
+특정 프론트엔드 주소 허용 시 다음과 같이 사용
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://example.com']
+}));
+*/
+app.use(express.static("public")); // 정적 파일 접근
+
+// 세션 설정
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || "your-secret-key", // .env에 키 저장 권장
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            secure: false, // https 적용 시 true
+            maxAge: 1000 * 60 * 60 * 24 // 1일
+        }
+    })
+);
+
+app.use(passport.initialize());
+app.use(passport.session())
+
+passport.use(localStrategy);
 passport.use(googleStrategy);
 passport.use(jwtStrategy);
 passport.use(kakaoStrategy);
 
-const app = express();
-const port = process.env.PORT;
+// Passport Serialization (세션에 유저 ID 저장/복원)
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await getUser(id);
+        done(null, user);
+    } catch (err) {
+        done(err);
+    }
+});
+
 
 /**
  * 공통 응답을 사용할 수 있는 헬퍼 함수 등록
@@ -44,22 +92,6 @@ app.use((req, res, next) => {
 
     next();
 });
-
-
-app.use(morgan('dev'));  // 로그 포맷: dev
-app.use(cookieParser());
-
-app.use(cors()); // cors 방식 허용
-/*
-특정 프론트엔드 주소 허용 시 다음과 같이 사용
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://example.com']
-}));
-*/
-app.use(express.static("public")); // 정적 파일 접근
-// 미들웨어 세팅
-app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
-app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
 
 // 응답 압축 미들웨어 추가
 app.use(
@@ -97,7 +129,14 @@ app.get('/getcookie', (req, res) => {
     }
 });
 
-const isLogin = passport.authenticate('jwt', { session: false });
+// jwt만 체크 -> 세션 로그인도 허용
+const isLogin = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next(); // 세션 로그인 통과
+    }
+    // 세션이 없으면 JWT 체크
+    return passport.authenticate('jwt', { session: false })(req, res, next);
+};
 
 app.get('/mypage', isLogin, (req, res) => {
     res.status(200).success({
@@ -190,6 +229,8 @@ app.get('/set-logout', (req, res) => {
     res.send('로그아웃 완료 (쿠키 삭제). <a href="/">메인으로</a>');
 });
 
+
+
 // 구글 로그인
 app.get("/oauth2/login/google",
     passport.authenticate("google", {
@@ -241,6 +282,7 @@ app.get("/oauth2/callback/kakao",
 );
 
 app.post("/api/v1/users/signup", handleUserSignUp);     // 회원가입
+app.post("/api/v1/users/login", handleUserLogin); // 로그인 연결
 app.post("/api/v1/stores", isLogin, handleCreateStore);          // 가게 등록
 app.post("/api/v1/stores/:storeId/reviews", isLogin, handleCreateReview);        // 리뷰 등록
 app.post("/api/v1/stores/:storeId/missions", isLogin, handleCreateMission);      // 미션 등록

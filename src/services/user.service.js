@@ -24,6 +24,7 @@ export const userSignUp = async (data) => {
         address: data.address,
         detailAddress: data.detailAddress,
         phoneNumber: data.phoneNumber,
+        provider: "EMAIL", // 이메일 가입 명시
     });
 
     if (joinUserId === null) {
