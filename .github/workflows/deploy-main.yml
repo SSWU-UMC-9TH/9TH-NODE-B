@@ -56,27 +56,6 @@ jobs:
         run: |
           ssh umc9thworkbook 'cd /opt/app; npx prisma migrate deploy'
 
-      - name: Copy systemd service file
-        run: |
-          ssh umc9thworkbook '
-            echo "[Unit]
-            Description=UMC 9th Project
-            After=network.target
-
-            [Service]
-            User=${USER}
-            ExecStart=/usr/bin/npm run start --prefix /opt/app/
-            Restart=always
-
-            [Install]
-            WantedBy=multi-user.target" | sudo tee /etc/systemd/system/app.service
-          '
-
-      - name: Enable systemd service
-        run: |
-          ssh umc9thworkbook 'sudo systemctl daemon-reload'
-          ssh umc9thworkbook 'sudo systemctl enable app'
-
       - name: Restart PM2
         run: |
           ssh umc9thworkbook 'cd /opt/app; pm2 reload ecosystem.config.cjs --env production --update-env'
