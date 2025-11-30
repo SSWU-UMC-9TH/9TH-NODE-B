@@ -64,9 +64,9 @@ export const localStrategy = new LocalStrategy(
 // 2. Google Strategy
 export const googleStrategy = new GoogleStrategy(
     {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:3000/oauth2/callback/google", // redirect URI 확인 필요
+        clientID: process.env.PASSPORT_GOOGLE_CLIENT_ID,
+        clientSecret: process.env.PASSPORT_GOOGLE_CLIENT_SECRET,
+        callbackURL: "http://localhost:3000/oauth2/callback/google",
         scope: ["email", "profile"],
     },
     async (accessToken, refreshToken, profile, done) => {
