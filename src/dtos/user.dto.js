@@ -25,3 +25,18 @@ export const responseFromUser = ({ user, preferences }) => {
         preferCategory: preferFoods,
     };
 };
+
+// 유저 정보 수정
+export const bodyToUserUpdate = (body) => {
+    const birth = body.birth ? new Date(body.birth) : undefined;
+
+    return {
+        name: body.name,
+        gender: body.gender,
+        birth,
+        address: body.address,
+        detailAddress: body.detailAddress,
+        phoneNumber: body.phoneNumber ? String(body.phoneNumber) : undefined,
+        preferences: body.preferences  // optional
+    };
+};

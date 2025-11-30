@@ -6,6 +6,8 @@ import {
     getUser,
     getUserPreferencesByUserId,
     setPreference,
+    updateUser,
+    clearPreferences
 } from "../repositories/user.repository.js";
 
 export const userSignUp = async (data) => {
@@ -22,6 +24,7 @@ export const userSignUp = async (data) => {
         address: data.address,
         detailAddress: data.detailAddress,
         phoneNumber: data.phoneNumber,
+        provider: "EMAIL", // 이메일 가입 명시
     });
 
     if (joinUserId === null) {
@@ -38,4 +41,29 @@ export const userSignUp = async (data) => {
     const preferences = await getUserPreferencesByUserId(joinUserId);
 
     return responseFromUser({ user, preferences });
+};
+
+export const updateMyInfo = async (userId, data) => {
+    const updateData = {};
+
+    if (data.name) updateData.name = data.name;
+    if (data.gender) updateData.gender = data.gender;
+    if (data.birth) updateData.birth = new Date(data.birth);
+    if (data.address) updateData.address = data.address;
+    if (data.detailAddress) updateData.detailAddress = data.detailAddress;
+    if (data.phoneNumber) updateData.phoneNumber = data.phoneNumber;
+
+    const updatedUser = await updateUser(userId, updateData);
+
+    // preferences 수정
+    if (Array.isArray(data.preferences)) {
+        await clearPreferences(userId);
+        for (const p of data.preferences) {
+            await setPreference(userId, p);
+        }
+    }
+
+    const preferences = await getUserPreferencesByUserId(userId);
+
+    return responseFromUser({ user: updatedUser, preferences });
 };

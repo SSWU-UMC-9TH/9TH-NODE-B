@@ -17,11 +17,18 @@ export const addUser = async (data) => {
             address: data.address,
             detailAddress: data.detailAddress,
             phoneNumber: data.phoneNumber,
+            provider: data.provider, // 가입 경로 저장
         },
     });
     return created.id;
 };
 
+// 이메일로 사용자 찾기 (로그인용)
+export const findUserByEmail = async (email) => {
+    return await prisma.user.findUnique({
+        where: { email },
+    });
+};
 
 // 사용자 정보 얻기
 export const getUser = async (userId) => {
@@ -45,4 +52,19 @@ export const getUserPreferencesByUserId = async (userId) => {
         orderBy: { foodCategoryId: "asc" },
     });
     return preferences;
+};
+
+// 유저 정보 업데이트
+export const updateUser = async (userId, data) => {
+    return prisma.user.update({
+        where: { id: userId },
+        data
+    });
+};
+
+// 유저 정보 삭제
+export const clearPreferences = async (userId) => {
+    return prisma.userFavorCategory.deleteMany({
+        where: { userId }
+    });
 };

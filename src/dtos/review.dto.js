@@ -1,7 +1,6 @@
 // [요청 DTO] 클라이언트 body → DB insert용 데이터 변환
 export const bodyToReview = (body) => {
     return {
-        userId: body.userId,       // 필수
         body: body.body,               // 필수 (리뷰 내용)
         score: body.score,             // 필수
         images: body.images || []      // 선택 (이미지 배열)

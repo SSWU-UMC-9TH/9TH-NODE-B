@@ -110,10 +110,8 @@ export const handleUserMissionChallenge = async (req, res, next) => {
     };
     */
     try {
-        const { storeId, missionId } = req.params;
-        console.log(`가게(${storeId}) 미션(${missionId}) 도전 요청:`, req.body);
-
-        const userMissionData = bodyToUserMission(req.body);
+        const userId = req.user.id;   // JWT 인증된 사용자
+        const userMissionData = { userId };
         const userMission = await createUserMission(storeId, missionId, userMissionData);
 
         const response = responseFromUserMission({ userMission });
@@ -203,8 +201,8 @@ export const handleListUserActiveMissions = async (req, res, next) => {
     };
     */
     try {
-        const requestDto = new ListUserActiveMissionsRequestDto(req.params);
-        const missions = await listUserActiveMissions(requestDto.userId);
+        const userId = req.user.id;
+        const missions = await listUserActiveMissions(userId);
         const responseDto = new UserActiveMissionListResponseDto(missions);
 
         res.status(StatusCodes.OK);
