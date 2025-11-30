@@ -170,7 +170,7 @@ app.get("/openapi.json", async (req, res, next) => {
             title: "UMC 9th",
             description: "UMC 9th Node.js 테스트 프로젝트입니다.",
         },
-        host: "localhost:3000",
+        host: "43.201.183.113:3000",
         // Swagger에서 Authorize 테스트를 하기 위한 코드 추가
         schemes: ["http"],
         securityDefinitions: {
