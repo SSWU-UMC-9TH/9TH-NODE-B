@@ -77,6 +77,6 @@ jobs:
           ssh umc9thworkbook 'sudo systemctl daemon-reload'
           ssh umc9thworkbook 'sudo systemctl enable app'
 
-      - name: Restart systemd service
+      - name: Restart PM2
         run: |
-          ssh umc9thworkbook 'sudo systemctl restart app'
+          ssh umc9thworkbook 'cd /opt/app; pm2 reload ecosystem.config.cjs --env production --update-env'
