@@ -1,7 +1,7 @@
 module.exports = {
     apps: [{
         name: 'umc-9th',
-        script: './index.js', // 실행할 메인 파일 경로 확인 필요
+        script: './src/index.js', // 실행할 메인 파일 경로 확인 필요
         instances: 'max',         // CPU 코어 수만큼 프로세스 생성 (무중단 필수 조건)
         exec_mode: 'cluster',     // 클러스터 모드 활성화
         merge_logs: true,         // 로그 병합
